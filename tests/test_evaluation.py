@@ -3,6 +3,8 @@ from copy import deepcopy
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 
 import cv2
 import numpy as np
@@ -278,3 +280,43 @@ def test_official_models_shared_features_empty_inputs_and_normalization():
     for model in (models.extractor, models.booster, models.lightglue):
         assert not model.training and all(not p.requires_grad for p in model.parameters())
     assert not torch.cuda.is_initialized()
+
+
+@pytest.mark.skipif(not os.environ.get("SCAF_BASELINE_ASSET_MANIFEST"), reason="official local assets not configured")
+def test_real_cli_all_empty_features_keep_failures_and_refuse_output_reuse(tmp_path):
+    # The tiny uniform images have no valid SuperPoint interior after border
+    # removal. Exercise all official adapters and the real streaming writer.
+    data, _, _, _, catalog_path = mini_data(tmp_path)
+    audit_output = tmp_path/"audit"
+    audit = subprocess.run([sys.executable, "-m", "scaf.data.cli", "--catalog", str(catalog_path),
+                            "--data-root", str(data), "audit", "--output", str(audit_output)],
+                           cwd=ROOT, capture_output=True, text=True)
+    assert audit.returncode == 0, audit.stderr
+    config = yaml.safe_load((ROOT/"configs/stage3.yaml").read_text())
+    config.update(catalog=str(catalog_path), sequences=["mini"], variants=["clean"],
+                  max_frames=3, frame_stride=1)
+    config_path = tmp_path/"evaluation.yaml"
+    config_path.write_text(yaml.safe_dump(config))
+    output = tmp_path/"evaluation"
+    args = [sys.executable, "-m", "scaf.evaluation.cli", "--config", str(config_path),
+            "--data-root", str(data), "--audit-manifest", str(audit_output/"manifest.json"),
+            "--asset-manifest", os.environ["SCAF_BASELINE_ASSET_MANIFEST"], "--output", str(output)]
+    result = subprocess.run(args, cwd=ROOT, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    manifest = json.loads((output/"manifest.json").read_text())
+    assert manifest["status"] == "completed" and not manifest["cuda_initialized"]
+    summary = json.loads((output/"summary.json").read_text())
+    assert len(summary["results"]) == 3
+    for row in summary["results"]:
+        assert row["trajectory"]["failed_transitions"] == 2
+        assert row["trajectory"]["frame_coverage"] == 0.
+        assert row["trajectory"]["full_trajectory_ate_m"] is None
+        assert row["match_quality"]["precision"] is None
+        assert not row["timing"]["sample_count_sufficient"]
+        trajectory = output/"mini"/"clean"/row["method"] / "trajectory.npz"
+        with np.load(trajectory, allow_pickle=False) as poses:
+            assert poses["T_world_camera"].shape == (0, 4, 4)
+    before = sha256(output/"manifest.json")
+    result = subprocess.run(args, cwd=ROOT, capture_output=True, text=True)
+    assert result.returncode != 0
+    assert sha256(output/"manifest.json") == before
