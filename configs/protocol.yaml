@@ -1,5 +1,5 @@
-# Protocol v1: defaults for stage 2/3 implementation, not an implemented evaluator.
-version: 1
+# Protocol v2: stage-3 fixed-backend implementation; data protocol remains v1.
+version: 2
 image:
   max_width: 640
   max_height: 480
@@ -21,6 +21,8 @@ backend:
   ransac_iterations: 100
   ransac_confidence: 0.999
   min_correspondences: 6
+  min_inliers: 6
+  solver: EPNP_RANSAC_LM
   failure_policy: break_segment_no_groundtruth_reset
 evaluation:
   alignment: se3_no_scale

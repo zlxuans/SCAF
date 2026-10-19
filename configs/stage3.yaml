@@ -1,0 +1,18 @@
+version: scaf-stage3-v1
+catalog: configs/datasets-v1.yaml
+baselines: configs/baselines-v1.yaml
+degradations: configs/degradations-v1.yaml
+protocol: configs/protocol.yaml
+sequences: [tum_fr1_xyz, tum_fr2_desk, tum_fr3_walking_xyz]
+variants: [clean, medium]
+methods: [superpoint, featurebooster, lightglue]
+max_keypoints: 512
+frame_stride: 3
+max_frames: 120
+seed: 7
+degradation_seed: 13
+threads: 1
+device: cpu
+timing_warmup_pairs: 10
+timing_min_pairs: 100
+performance_benchmark: false

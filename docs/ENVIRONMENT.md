@@ -46,3 +46,7 @@ PyTorch 对应版本的 CPU/cu121 安装命令来源：[官方历史版本说明
 不要将运行环境的完整进程命令行、环境变量列表或凭据写入公开文档。
 
 本地仅编辑、审阅与同步，不再运行项目代码或测试。实际安装目录为服务器 `/developer06/SCAF`，后续 CPU/GPU 检查、数据处理、训练和评测都在服务器进行。已有本地 CPU 环境记录仅作历史参考。
+
+## 阶段 3 依赖增量
+
+阶段 3 在同一 SCAF 独立环境增加 Kornia 0.7.4、kornia-rs 0.2.0，PyTorch/CUDA 版本保持上述环境配置。完整锁文件为 `requirements/lock-stage3-cuda121-py312.txt`，保留前两个历史锁文件以便复建旧阶段。源码与权重单独锁定，不通过 pip 自动更新 LightGlue。准备及运行入口见 [阶段 3 说明](STAGE3_BASELINES.md)。

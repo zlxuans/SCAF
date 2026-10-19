@@ -1,0 +1,40 @@
+version: scaf-baselines-v1
+sources:
+  lightglue:
+    url: https://github.com/cvg/LightGlue.git
+    revision: eb42fee2d71449efb0aa5c10549752b5d75384d8
+    directory: LightGlue
+    files: [lightglue/lightglue.py, lightglue/superpoint.py, lightglue/utils.py, LICENSE]
+  featurebooster:
+    url: https://github.com/SJTU-ViSYS/FeatureBooster.git
+    revision: 0260868806d0ae603a166848d64078bfd1c2f1f9
+    directory: FeatureBooster
+    files: [featurebooster.py, config.yaml, extract_features.py, LICENSE]
+weights:
+  superpoint:
+    file: superpoint_v1.pth
+    sha256: 52b6708629640ca883673b5d5c097c4ddad37d8048b33f09c8ca0d69db12c40e
+    url: https://github.com/cvg/LightGlue/releases/download/v0.1_arxiv/superpoint_v1.pth
+  lightglue:
+    file: superpoint_lightglue.pth
+    sha256: 6ff7040d0a497fc6639337946d7538dae07428c18f77a067a0b5a960e7cc551a
+    url: https://github.com/cvg/LightGlue/releases/download/v0.1_arxiv/superpoint_lightglue.pth
+  featurebooster:
+    source: featurebooster
+    file: models/SuperPoint+Boost-F.pth
+    sha256: 5334d9aa861e877a2b99baff0d682e1ac8a749cdd65eb1d4b8bd0a8bb8bf0359
+superpoint:
+  descriptor_dim: 256
+  nms_radius: 4
+  detection_threshold: 0.0005
+  remove_borders: 4
+lightglue:
+  input_dim: 256
+  descriptor_dim: 256
+  n_layers: 9
+  num_heads: 4
+  flash: true
+  mp: false
+  depth_confidence: 0.95
+  width_confidence: 0.99
+  filter_threshold: 0.1

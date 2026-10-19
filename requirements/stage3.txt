@@ -1,0 +1,4 @@
+-r dev.txt
+# The official SuperPoint utility module imports Kornia. Unused extractors are not imported.
+kornia==0.7.4
+kornia-rs==0.2.0
