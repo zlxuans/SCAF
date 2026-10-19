@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 scaf_python="${SCAF_PYTHON:-$PWD/.venv/bin/python}"
-export PYTHONPATH="$PWD/src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$PWD/src"
 export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
 log_root="${SCAF_JOB_LOG_ROOT:-$PWD/runs/launcher}"
 mkdir -p "$log_root"

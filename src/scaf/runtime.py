@@ -7,6 +7,7 @@ import json
 import os
 import platform
 import subprocess
+import sysconfig
 import uuid
 
 
@@ -89,7 +90,8 @@ class RunRecord:
                          "dataset_manifest": None, "split_manifest": None, "pretrained_weights": None}
         self.save()
         write_json(self.path / "config.json", config.as_dict())
-        dependencies = sorted(f"{d.metadata['Name']}=={d.version}" for d in distributions())
+        dependencies = sorted(f"{d.metadata['Name']}=={d.version}" for d in
+                              distributions(path=[sysconfig.get_paths()["purelib"]]))
         (self.path / "dependencies.txt").write_text("\n".join(dependencies) + "\n", encoding="utf-8")
 
     def save(self):

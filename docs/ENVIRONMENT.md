@@ -20,6 +20,10 @@ bash scripts/check.sh
 
 PyTorch 对应版本的 CPU/cu121 安装命令来源：[官方历史版本说明](https://pytorch.org/get-started/previous-versions/)。Python 包中的 CUDA 运行时与系统编译工具链不同，本阶段不编译 CUDA 扩展。
 
+已验收环境的完整版本列表在 `requirements/lock-cpu-py312.txt` 和 `requirements/lock-cuda121-py312.txt`。复建时先用对应 PyTorch 索引安装固定 torch 版本，再通过默认 Python 包索引安装该列表的其他依赖（torch 已安装时无需重新解析其来源），最后安装本项目。CPU/CUDA 锁文件分开维护，不互相覆盖。
+
+若 shell 设置了其他项目的 PYTHONPATH，运行前使用 `export PYTHONPATH="$PWD/src"`，检查与后台脚本已自动设置；依赖快照仅枚举本虚拟环境，避免把系统 ROS 包误写入安装清单。
+
 ## 目录
 
 | 路径 | 用途 |
