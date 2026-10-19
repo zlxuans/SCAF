@@ -45,6 +45,25 @@ def test_cpu_check_hides_all_gpus_and_rejects_gpu_flags(monkeypatch):
             pass
 
 
+def test_gpu_uuid_mapping_and_exclusive_diagnostic_lock(monkeypatch):
+    monkeypatch.setattr(smoke, "gpu_inventory", lambda: {"gpus": [
+        dict(index=1, uuid="scaf-test-exclusive", total_mib=24576, used_mib=0, utilization_pct=0)]})
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0,1")
+    with smoke.selected_device("cuda", gpu=1):
+        assert os.environ["CUDA_VISIBLE_DEVICES"] == "scaf-test-exclusive"
+        with pytest.raises(RuntimeError, match="lock"):
+            with smoke.selected_device("cuda", gpu=1):
+                pytest.fail("concurrent diagnostics acquired the same GPU")
+
+
+def test_shared_override_still_refuses_low_free_memory(monkeypatch):
+    monkeypatch.setattr(smoke, "gpu_inventory", lambda: {"gpus": [
+        dict(index=0, uuid="scaf-test-low-memory", total_mib=24576, used_mib=24000, utilization_pct=90)]})
+    with pytest.raises(RuntimeError, match="1 GiB"):
+        with smoke.selected_device("cuda", gpu=0, allow_busy=True):
+            pytest.fail("insufficient free memory allowed")
+
+
 @pytest.fixture
 def checkout(tmp_path):
     source = Path(__file__).resolve().parents[1]
