@@ -73,6 +73,8 @@ def audit(catalog, args):
                       "rgb_frames": len(seq.rgb), "depth_frames": len(seq.depth), "rgbd_pairs": len(seq),
                       "rgb_unmatched": len(seq.rgb)-len(seq), "depth_unmatched": len(seq.depth)-len(seq),
                       "pose_supported_pairs": pose_count, "pose_missing_pairs": len(seq)-pose_count,
+                      "ambiguous_pose_timestamps": len(seq.ambiguous_pose_times),
+                      "ambiguous_pose_rows_excluded": seq.ambiguous_pose_rows,
                       "max_rgb_depth_delta_s": max(deltas), "image_hw": list(next(iter(dimensions))),
                       "K_native": seq.K.tolist(), "files": len(files), "bytes": total_bytes,
                       "png_decoded": decoded, "archives": archive_checks}

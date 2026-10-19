@@ -11,7 +11,7 @@ from .geometry import interpolate_pose, quaternion_matrix, resized_intrinsics
 cv2.setNumThreads(1)
 
 
-def read_rows(path, columns):
+def read_rows(path, columns, allow_equal_times=False):
     rows = []
     for number, line in enumerate(Path(path).read_text().splitlines(), 1):
         fields = line.split("#", 1)[0].split()
@@ -20,7 +20,8 @@ def read_rows(path, columns):
         if len(fields) != columns:
             raise ValueError(f"{path}:{number}: expected {columns} columns")
         timestamp = float(fields[0])
-        if not np.isfinite(timestamp) or (rows and timestamp <= rows[-1][0]):
+        out_of_order = rows and (timestamp < rows[-1][0] or (timestamp == rows[-1][0] and not allow_equal_times))
+        if not np.isfinite(timestamp) or out_of_order:
             raise ValueError(f"{path}:{number}: timestamps must be finite and strictly increasing")
         rows.append((timestamp, *fields[1:]))
     if not rows:
@@ -78,12 +79,19 @@ class RGBDSequence:
             raise ValueError("ETH3D RGB/depth should have identical timestamps")
         pose_file = self.root / "groundtruth.txt"
         self.poses = None
+        self.ambiguous_pose_times = np.empty(0)
+        self.ambiguous_pose_rows = 0
         if pose_file.exists():
-            self.poses = np.asarray(read_rows(pose_file, 8), dtype=np.float64)
-            if not np.isfinite(self.poses).all():
+            raw_poses = np.asarray(read_rows(pose_file, 8, allow_equal_times=True), dtype=np.float64)
+            if not np.isfinite(raw_poses).all():
                 raise ValueError("nonfinite reference pose")
-            for row in self.poses:
+            for row in raw_poses:
                 quaternion_matrix(row[4:])
+            times, counts = np.unique(raw_poses[:, 0], return_counts=True)
+            self.ambiguous_pose_times = times[counts > 1]
+            self.ambiguous_pose_rows = int(counts[counts > 1].sum())
+            poses = raw_poses[~np.isin(raw_poses[:, 0], self.ambiguous_pose_times)]
+            self.poses = poses if len(poses) else None
         self.pose_max_gap = pose_max_gap
         camera = spec["camera"]
         if set(camera) == {"source", "intrinsics"} and camera["source"] == "tum_registered_ros_default":
@@ -102,7 +110,16 @@ class RGBDSequence:
         return len(self.pairs)
 
     def pose(self, timestamp):
-        return None if self.poses is None else interpolate_pose(self.poses, timestamp, self.pose_max_gap)
+        if self.poses is None:
+            return None
+        hi = int(np.searchsorted(self.poses[:, 0], timestamp))
+        if hi < len(self.poses) and self.poses[hi, 0] == timestamp:
+            return interpolate_pose(self.poses, timestamp, self.pose_max_gap)
+        if 0 < hi < len(self.poses):
+            lower, upper = self.poses[hi-1, 0], self.poses[hi, 0]
+            if np.any((self.ambiguous_pose_times >= lower) & (self.ambiguous_pose_times <= upper)):
+                return None  # never bridge a timestamp with ambiguous truth
+        return interpolate_pose(self.poses, timestamp, self.pose_max_gap)
 
     def load(self, index, max_wh=(640, 480)):
         i, j = self.pairs[index]

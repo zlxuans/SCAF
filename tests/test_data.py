@@ -128,6 +128,20 @@ def test_missing_pose_is_explicit_and_bad_depth_fails(tmp_path):
         RGBDSequence(spec, data).load(0)
 
 
+def test_ambiguous_groundtruth_removed_without_interpolation_across_it(tmp_path):
+    data, directory, spec, _, _ = mini_data(tmp_path)
+    path = directory / "groundtruth.txt"
+    original = path.read_text()
+    path.write_text(original.replace("1.020 0.1 0 0 0 0 0 1", "1.020 0.1 0 0 0 0 0 1\n1.020 0.11 0 0 0 0 0 1"))
+    raw = path.read_text()
+    seq = RGBDSequence(spec, data)
+    assert seq.ambiguous_pose_rows == 2
+    assert len(seq.ambiguous_pose_times) == 1
+    assert seq.pose(1.020) is None and seq.pose(1.010) is None and seq.pose(1.030) is None
+    assert seq.pose(1.000) is not None and seq.pose(1.040) is not None
+    assert path.read_text() == raw  # reader leaves the raw input untouched
+
+
 def test_analytic_translation_transform_and_unique_targets():
     a, b = frame(), frame()
     b.T_world_camera = np.eye(4)
