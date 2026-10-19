@@ -1,11 +1,13 @@
 # 服务器运行说明
 
+所有代码运行和测试均在服务器 `/developer06/SCAF` 执行，本地仅编辑与同步。
+
 ## 双卡共享规则
 
 服务器有两张 TITAN RTX 24 GiB，阶段 1 检查时两张卡均有其他任务。默认只使用 CPU，线程数为 1。不要终止其他任务、切换显卡模式、修改系统 CUDA、更新其他项目的环境或自动启动双卡训练。
 
 ```bash
-cd /root/SCAF
+cd /developer06/SCAF
 .venv/bin/python -m scaf.cli doctor
 bash scripts/check.sh
 ```
@@ -29,16 +31,16 @@ CUDA 诊断必须显式指定物理卡索引，通过 nvidia-smi 查询后转换
 运行期间使用主目录以外的 detached Git worktree，避免下一次推送修改正在执行的源码：
 
 ```bash
-cd /root/SCAF
+cd /developer06/SCAF
 revision=$(git rev-parse HEAD)
-bash scripts/snapshot.sh "/root/SCAF-worktrees/$revision" "$revision"
-cd "/root/SCAF-worktrees/$revision"
+bash scripts/snapshot.sh "/developer06/SCAF-worktrees/$revision" "$revision"
+cd "/developer06/SCAF-worktrees/$revision"
 
 # 必须指向快照源码，避免共享环境中的 editable 安装读到主目录
 export PYTHONPATH="$PWD/src"
-export SCAF_PYTHON=/root/SCAF/.venv/bin/python
+export SCAF_PYTHON=/developer06/SCAF/.venv/bin/python
 export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
-"$SCAF_PYTHON" -m scaf.cli smoke --device cpu --output-root /root/SCAF/runs
+"$SCAF_PYTHON" -m scaf.cli smoke --device cpu --output-root /developer06/SCAF/runs
 ```
 
 `snapshot.sh` 要求主目录干净、目标路径为目录外的新绝对路径；已存在快照可直接复用。阶段 1 的测试会提交主目录新版本，验证 detached 快照文件及提交未改变。不要在快照中执行开发修改或更新依赖；后续依赖变更也需要为旧任务保留原环境。
@@ -49,8 +51,8 @@ export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
 
 ```bash
 # 返回一个 launcher 目录，其中有 pid 和 console.log
-SCAF_PYTHON=/root/SCAF/.venv/bin/python bash scripts/launch_smoke.sh \
-  --device cpu --output-root /root/SCAF/runs
+SCAF_PYTHON=/developer06/SCAF/.venv/bin/python bash scripts/launch_smoke.sh \
+  --device cpu --output-root /developer06/SCAF/runs
 
 # 将 JOB_DIR 替换为实际返回目录；使用脚本实际返回路径
 cat JOB_DIR/pid
@@ -70,3 +72,5 @@ python -m scaf.cli smoke --device cpu --steps 3 --resume RUN_DIR/checkpoint.pt
 ```
 
 每次恢复创建新目录，不覆盖原日志。损坏/错误版本/配置不一致的检查点会报错；训练模型的断点恢复是阶段 6 的独立工作。本阶段不调用 GPU 长循环，不开始数据下载或正式训练。
+
+CUDA 确定性检查在导入 PyTorch 前设置 `CUBLAS_WORKSPACE_CONFIG=:4096:8`；该设置只影响本次 SCAF 进程，不修改其他训练进程。

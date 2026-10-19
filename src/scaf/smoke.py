@@ -43,6 +43,7 @@ def selected_device(device, gpu=None, allow_busy=False):
 
 def run_smoke(config, record, resume=None):
     # Import only after the caller has constrained CUDA visibility.
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
     import torch
 
     torch.set_num_threads(config.threads)
