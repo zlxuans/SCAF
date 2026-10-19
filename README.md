@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-目前已完成 Git 初始化、GitHub 与训练服务器首次同步，并制定[分阶段开发与实验计划清单](docs/DEVELOPMENT_PLAN.md)。算法代码、训练流程及正式实验尚未实现，下一步为阶段 1：工程骨架、运行环境与实验协议。
+已建立工程骨架、CPU/GPU 诊断、配置与日志记录、诊断断点恢复和固定提交运行方式。阶段 1 验收情况见[阶段记录](docs/STAGE1_REPORT.md)；下一步为阶段 2：数据准备、场景划分与监督生成。算法模型、训练流程与正式评测尚未实现。
 
 ## 研究内容
 
@@ -34,7 +34,7 @@
 
 完整任务、交付物和验收标准见[开发计划清单](docs/DEVELOPMENT_PLAN.md)。
 
-- [ ] 阶段 1：工程骨架、运行环境与实验协议。
+- [x] 阶段 1：工程骨架、运行环境与实验协议。
 - [ ] 阶段 2：数据准备、场景划分与监督生成。
 - [ ] 阶段 3：强基线与统一视觉里程计评测。
 - [ ] 阶段 4：几何可靠性感知描述子增强。
@@ -53,3 +53,17 @@
 git clone git@github.com:zlxuans/SCAF.git
 cd SCAF
 ```
+
+## 运行与复现
+
+安装说明见[环境文档](docs/ENVIRONMENT.md)，服务器资源和固定提交运行见[服务器操作说明](docs/SERVER_RUNBOOK.md)，后续评测遵循[实验协议 v1](docs/EXPERIMENT_PROTOCOL.md)。
+
+```bash
+# 在服务器 /developer06/SCAF 安装独立环境后运行
+bash scripts/check.sh
+.venv/bin/python -m scaf.cli doctor
+```
+
+默认只检查 CPU。CUDA 微型诊断必须显式指定物理 GPU，默认拒绝占用中的卡；共享诊断不作为性能基准，也不会启动训练。
+
+代码运行和测试均在服务器 `/developer06/SCAF`；本地仅编辑与同步。阶段 1 未开始算法训练，两张 GPU 的已有任务继续运行。
