@@ -46,6 +46,11 @@ def run_smoke(config, record, resume=None):
     os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
     import torch
 
+    record.manifest["runtime_environment"] = {
+        "CUDA_VISIBLE_DEVICES": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "CUBLAS_WORKSPACE_CONFIG": os.environ["CUBLAS_WORKSPACE_CONFIG"],
+        "torch_threads": config.threads,
+    }
     torch.set_num_threads(config.threads)
     random.seed(config.seed)
     np.random.seed(config.seed)
