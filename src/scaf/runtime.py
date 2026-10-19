@@ -43,7 +43,7 @@ def gpu_inventory():
 
 def environment():
     packages = {}
-    for name in ("scaf-research", "numpy", "PyYAML", "torch", "pytest"):
+    for name in ("scaf-research", "numpy", "PyYAML", "opencv-python-headless", "torch", "pytest"):
         try:
             packages[name] = version(name)
         except PackageNotFoundError:

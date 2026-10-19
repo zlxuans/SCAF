@@ -7,13 +7,14 @@ name = "scaf-research"
 version = "0.1.0"
 description = "Reproducible low-light RGB-D descriptor research"
 requires-python = ">=3.10,<3.13"
-dependencies = ["numpy==1.26.4", "PyYAML==6.0.2"]
+dependencies = ["numpy==1.26.4", "PyYAML==6.0.2", "opencv-python-headless==4.10.0.84"]
 
 [project.optional-dependencies]
 dev = ["pytest==8.3.5"]
 
 [project.scripts]
 scaf = "scaf.cli:main"
+scaf-data = "scaf.data.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

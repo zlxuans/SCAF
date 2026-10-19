@@ -1,0 +1,63 @@
+version: scaf-data-v1
+# Entire sequences only. fr2/fr3 conservatively share one validation group;
+# an acquisition prefix alone is not proof of physical scene independence.
+sequences:
+  - id: tum_fr1_xyz
+    dataset: tum
+    scene: tum_fr1_small_office
+    split: train
+    path: sequences/rgbd_dataset_freiburg1_xyz
+    illumination: normal
+    camera: {source: tum_registered_ros_default, intrinsics: [525.0, 525.0, 319.5, 239.5]}
+    depth_units_per_metre: 5000.0
+    pose_convention: T_world_camera_xyzw_metres
+    groundtruth_source: TUM motion capture
+    archives:
+      - file: rgbd_dataset_freiburg1_xyz.tgz
+        sha256: a0236d97b8c30cd93b653656d2b6c293ff7c982a4130ef2a1a8beecdb124ef98
+        url: https://cvg.cit.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.tgz
+  - id: tum_fr2_desk
+    dataset: tum
+    scene: tum_office_conservative_group
+    split: val
+    path: sequences/rgbd_dataset_freiburg2_desk
+    illumination: normal
+    camera: {source: tum_registered_ros_default, intrinsics: [525.0, 525.0, 319.5, 239.5]}
+    depth_units_per_metre: 5000.0
+    pose_convention: T_world_camera_xyzw_metres
+    groundtruth_source: TUM motion capture
+    archives:
+      - file: rgbd_dataset_freiburg2_desk.tgz
+        sha256: 1a0756d72510a26e26e2a02bf0b6c69c2796619fca531e176fc2e5110173807c
+        url: https://cvg.cit.tum.de/rgbd/dataset/freiburg2/rgbd_dataset_freiburg2_desk.tgz
+  - id: tum_fr3_walking_xyz
+    dataset: tum
+    scene: tum_office_conservative_group
+    split: val
+    path: sequences/rgbd_dataset_freiburg3_walking_xyz
+    illumination: normal_dynamic_scene
+    camera: {source: tum_registered_ros_default, intrinsics: [525.0, 525.0, 319.5, 239.5]}
+    depth_units_per_metre: 5000.0
+    pose_convention: T_world_camera_xyzw_metres
+    groundtruth_source: TUM motion capture
+    archives:
+      - file: rgbd_dataset_freiburg3_walking_xyz.tgz
+        sha256: 8e54ef4322209e94b9643dab6c0f705b25ddbe64111368c3b3c5fee80b58f86b
+        url: https://cvg.cit.tum.de/rgbd/dataset/freiburg3/rgbd_dataset_freiburg3_walking_xyz.tgz
+  - id: eth3d_einstein_flashlight
+    dataset: eth3d
+    scene: eth3d_einstein
+    split: test
+    path: sequences/einstein_flashlight
+    illumination: real_flashlight
+    camera: {source: calibration.txt}
+    depth_units_per_metre: 5000.0
+    pose_convention: T_world_camera_xyzw_metres
+    groundtruth_source: ETH3D motion capture (public benchmark training subset, held out by SCAF)
+    archives:
+      - file: einstein_flashlight_mono.zip
+        sha256: c631bdd75ebb8ae2fedae6d60399290b5aaed036ccf5d48f94cfec0cec3e0c92
+        url: https://www.eth3d.net/data/slam/datasets/einstein_flashlight_mono.zip
+      - file: einstein_flashlight_rgbd.zip
+        sha256: 76eda7367e800b0c9a2818bf6391f47efcf01ce059f158580a33ef820029637e
+        url: https://www.eth3d.net/data/slam/datasets/einstein_flashlight_rgbd.zip

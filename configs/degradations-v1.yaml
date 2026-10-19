@@ -1,0 +1,10 @@
+version: scaf-degradations-v1
+seed: 13
+levels:
+  clean: {gamma: 1.0, gain: 1.0}
+  low: {gamma: 1.5, gain: 0.6, rgb_noise_std: 0.01}
+  medium: {gamma: 2.0, gain: 0.4, rgb_noise_std: 0.02}
+  severe: {gamma: 2.5, gain: 0.25, rgb_noise_std: 0.03}
+  depth_missing: {depth_dropout: 0.3}
+  depth_noisy: {depth_noise_std_m: 0.01, depth_noise_relative: 0.02}
+  combined: {gamma: 2.0, gain: 0.4, rgb_noise_std: 0.02, depth_dropout: 0.3, depth_noise_std_m: 0.01, depth_noise_relative: 0.02}
