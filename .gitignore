@@ -1,0 +1,48 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Build and packaging outputs
+/build/
+/dist/
+*.egg-info/
+
+# Local datasets, model weights, and generated experiment outputs
+/data/
+/datasets/
+/artifacts/
+/results/
+/outputs/
+/runs/
+/checkpoints/
+/weights/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+
+# Original project documents remain local; publishable Markdown is tracked
+/docs/*.[dD][oO][cC][xX]
+/docs/**/*.[dD][oO][cC][xX]
+~$*
+
+# Local credentials, editors, and OS files
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
