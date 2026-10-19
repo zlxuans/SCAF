@@ -74,3 +74,9 @@ python -m scaf.cli smoke --device cpu --steps 3 --resume RUN_DIR/checkpoint.pt
 每次恢复创建新目录，不覆盖原日志。损坏/错误版本/配置不一致的检查点会报错；训练模型的断点恢复是阶段 6 的独立工作。本阶段不调用 GPU 长循环，不开始数据下载或正式训练。
 
 CUDA 确定性检查在导入 PyTorch 前设置 `CUBLAS_WORKSPACE_CONFIG=:4096:8`；该设置只影响本次 SCAF 进程，不修改其他训练进程。
+
+## 阶段 3 基线
+
+官方源码/权重准备、增量依赖和开发评测见 [阶段 3 基线说明](STAGE3_BASELINES.md)，结果见 [阶段报告](STAGE3_REPORT.md)。阶段 3 评测仅支持单线程 CPU，入口会禁用 CUDA；不需要选择 GPU，不改变已有两张卡的任务。`scripts/check_stage3.sh` 运行完整测试和三条开发序列的 clean/medium 基线，必须提供已完成的数据审计与本地固定资产清单。
+
+验收基线固定源码 worktree 为 `/developer06/SCAF-worktrees/stage3-3bd40ba`，输出保留 `/developer06/SCAF/runs/stage3-3bd40ba-acceptance/`。后续新增测试单独使用 `stage3-35ba5ae` worktree，主目录同步不会改变已完成基线的源码。

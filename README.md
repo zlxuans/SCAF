@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-阶段 1/2 已完成：工程与环境、四条 RGB-D 序列的数据审计、场景隔离划分、确定性退化和几何监督接口已在服务器通过检查。详见[阶段 1 记录](docs/STAGE1_REPORT.md)、[阶段 2 记录](docs/STAGE2_REPORT.md)及[数据协议](docs/DATA_PROTOCOL.md)。下一步为阶段 3：强基线与统一视觉里程计评测。算法模型、训练流程与正式评测尚未实现。
+阶段 1/2/3 已完成：数据管线、三类官方冻结基线、统一匹配评分和固定 RGB-D PnP 里程计已在服务器通过检查。阶段 3 完成 53 项测试和 18 项开发条件结果，详见[阶段 3 报告](docs/STAGE3_REPORT.md)、[基线运行说明](docs/STAGE3_BASELINES.md)及[实验协议 v2](docs/EXPERIMENT_PROTOCOL.md)。当前结果使用开发序列前缀；真实低照度测试集保留，SCAF 几何/时序增强、训练与正式实验尚未实现。下一步为阶段 4。
 
 ## 研究内容
 
@@ -36,7 +36,7 @@
 
 - [x] 阶段 1：工程骨架、运行环境与实验协议。
 - [x] 阶段 2：数据准备、场景划分与监督生成。
-- [ ] 阶段 3：强基线与统一视觉里程计评测。
+- [x] 阶段 3：强基线与统一视觉里程计评测。
 - [ ] 阶段 4：几何可靠性感知描述子增强。
 - [ ] 阶段 5：时序可靠性约束与匹配筛选。
 - [ ] 阶段 6：正式训练与验证集选型。
@@ -56,7 +56,7 @@ cd SCAF
 
 ## 运行与复现
 
-安装说明见[环境文档](docs/ENVIRONMENT.md)，服务器资源和固定提交运行见[服务器操作说明](docs/SERVER_RUNBOOK.md)，后续评测遵循[实验协议 v1](docs/EXPERIMENT_PROTOCOL.md)。
+安装说明见[环境文档](docs/ENVIRONMENT.md)，服务器资源和固定提交运行见[服务器操作说明](docs/SERVER_RUNBOOK.md)，评测遵循[实验协议 v2](docs/EXPERIMENT_PROTOCOL.md)。
 
 ```bash
 # 在服务器 /developer06/SCAF 安装独立环境后运行
@@ -64,8 +64,11 @@ bash scripts/check.sh
 .venv/bin/python -m scaf.cli doctor
 # 数据已按协议部署后：全量审计及开发集几何/退化 QA，仅 CPU
 bash scripts/check_stage2.sh
+# 阶段 3：先按基线说明准备固定资产，再指定已完成的数据审计
+SCAF_AUDIT_MANIFEST=/developer06/SCAF/runs/stage2-20261019T102938-1156259/audit/manifest.json \
+  bash scripts/check_stage3.sh
 ```
 
 默认只检查 CPU。CUDA 微型诊断必须显式指定物理 GPU，默认拒绝占用中的卡；共享诊断不作为性能基准，也不会启动训练。
 
-代码运行和测试均在服务器 `/developer06/SCAF`；本地仅编辑与同步。阶段 2 未开始算法训练，两张 GPU 的已有任务继续运行。完整数据及输出保留服务器，本地仅取回必要的小型检查副本。
+代码运行和测试均在服务器 `/developer06/SCAF`；本地仅编辑与同步。阶段 3 使用单线程 CPU，不初始化 CUDA、不开始算法训练，两张 GPU 的已有任务继续运行。完整数据及输出保留服务器，本地仅取回必要的小型检查副本。
