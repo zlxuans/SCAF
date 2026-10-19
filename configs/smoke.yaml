@@ -1,0 +1,6 @@
+name: stage1_smoke
+seed: 7
+degradation_seed: 13
+steps: 3
+threads: 1
+output_root: runs

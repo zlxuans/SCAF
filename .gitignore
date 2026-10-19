@@ -1,5 +1,6 @@
 # Python environments and caches
 .venv/
+.python/
 venv/
 env/
 __pycache__/
@@ -27,6 +28,7 @@ coverage.xml
 /runs/
 /checkpoints/
 /weights/
+/worktrees/
 *.pt
 *.pth
 *.ckpt

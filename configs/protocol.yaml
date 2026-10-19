@@ -1,0 +1,33 @@
+# Protocol v1: defaults for stage 2/3 implementation, not an implemented evaluator.
+version: 1
+image:
+  max_width: 640
+  max_height: 480
+  preserve_aspect_ratio: true
+  upscale: false
+features:
+  detector: superpoint
+  frozen: true
+  max_keypoints: 512
+  efficiency_budgets: [256, 512, 1024]
+matching:
+  distance: l2_on_unit_descriptors
+  mutual_nearest: true
+  ratio: 0.8
+  geometric_label_reprojection_px: 3.0
+backend:
+  kind: rgbd_pnp
+  ransac_reprojection_px: 3.0
+  ransac_iterations: 100
+  ransac_confidence: 0.999
+  min_correspondences: 6
+  failure_policy: break_segment_no_groundtruth_reset
+evaluation:
+  alignment: se3_no_scale
+  rpe_delta_selected_frames: 1
+  rpe_translation_unit: m
+  rpe_rotation_unit: deg
+  training_seeds: [7, 13, 29]
+  degradation_seeds: [7, 13, 29]
+  timing_warmup_pairs: 10
+  timing_min_pairs: 100
