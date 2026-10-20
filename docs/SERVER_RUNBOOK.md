@@ -80,3 +80,9 @@ CUDA 确定性检查在导入 PyTorch 前设置 `CUBLAS_WORKSPACE_CONFIG=:4096:8
 官方源码/权重准备、增量依赖和开发评测见 [阶段 3 基线说明](STAGE3_BASELINES.md)，结果见 [阶段报告](STAGE3_REPORT.md)。阶段 3 评测仅支持单线程 CPU，入口会禁用 CUDA；不需要选择 GPU，不改变已有两张卡的任务。`scripts/check_stage3.sh` 运行完整测试和三条开发序列的 clean/medium 基线，必须提供已完成的数据审计与本地固定资产清单。
 
 验收基线固定源码 worktree 为 `/developer06/SCAF-worktrees/stage3-3bd40ba`，输出保留 `/developer06/SCAF/runs/stage3-3bd40ba-acceptance/`。后续新增测试单独使用 `stage3-35ba5ae` worktree，主目录同步不会改变已完成基线的源码。
+
+## 阶段 4 几何增强
+
+方法、单线程 CPU 验收命令和输出说明见 [阶段 4 方法](STAGE4_METHOD.md)，验收及实际效果见 [阶段 4 报告](STAGE4_REPORT.md)。`scripts/check_stage4.sh` 执行全部回归测试、固定 48 步排错训练、两条 val 序列的三条件前缀实验及保存文件核验；不含正式训练恢复，也不读取测试集特征。
+
+实验固定 worktree 为 `/developer06/SCAF-worktrees/stage4-3c9d117`，输出为 `/developer06/SCAF/runs/stage4-3c9d117-acceptance/`。新增独立核验脚本从 `/developer06/SCAF-worktrees/stage4-abae180` 执行，原实验源码未变。排错检查点保留服务器 `experiment/geometry-final.pt`，不提交公开仓库。
