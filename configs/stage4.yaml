@@ -1,0 +1,33 @@
+version: scaf-stage4-v1
+catalog: configs/datasets-v1.yaml
+baselines: configs/baselines-v1.yaml
+degradations: configs/degradations-v1.yaml
+protocol: configs/protocol.yaml
+train_sequence: tum_fr1_xyz
+validation_sequences: [tum_fr2_desk, tum_fr3_walking_xyz]
+variants: [clean, medium, combined]
+max_keypoints: 512
+frame_stride: 3
+validation_frames: 24
+train_pairs: 8
+train_pair_spacing: 12
+train_variant: medium
+train_steps: 48
+learning_rate: 0.001
+temperature: 0.1
+negative_radius_px: 12.0
+seed: 7
+degradation_seed: 13
+timing_warmup_frames: 3
+model:
+  descriptor_dim: 256
+  hidden_dim: 64
+  neighbors: 16
+  radius_m: 0.30
+  radius_px: 96.0
+  patch_radius: 2
+  min_depth_m: 0.2
+  max_depth_m: 8.0
+  continuity_abs_m: 0.03
+  continuity_rel: 0.02
+  residual_scale: 0.15
