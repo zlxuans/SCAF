@@ -15,4 +15,5 @@ mkdir "$scaf_output"
 nice -n 10 ionice -c 3 "$scaf_python" -m scaf.stage4 \
     --data-root "$scaf_data" --audit-manifest "$scaf_audit" --asset-manifest "$scaf_assets" \
     --output "$scaf_output/experiment" | tee "$scaf_output/experiment.log"
+"$scaf_python" scripts/verify_stage4.py "$scaf_output/experiment" --output "$scaf_output/artifact-verification.json"
 printf '%s\n' "$scaf_output"
