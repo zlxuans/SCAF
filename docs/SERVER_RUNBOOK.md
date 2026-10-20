@@ -86,3 +86,9 @@ CUDA 确定性检查在导入 PyTorch 前设置 `CUBLAS_WORKSPACE_CONFIG=:4096:8
 方法、单线程 CPU 验收命令和输出说明见 [阶段 4 方法](STAGE4_METHOD.md)，验收及实际效果见 [阶段 4 报告](STAGE4_REPORT.md)。`scripts/check_stage4.sh` 执行全部回归测试、固定 48 步排错训练、两条 val 序列的三条件前缀实验及保存文件核验；不含正式训练恢复，也不读取测试集特征。
 
 实验固定 worktree 为 `/developer06/SCAF-worktrees/stage4-3c9d117`，输出为 `/developer06/SCAF/runs/stage4-3c9d117-acceptance/`。新增独立核验脚本从 `/developer06/SCAF-worktrees/stage4-abae180` 执行，原实验源码未变。排错检查点保留服务器 `experiment/geometry-final.pt`，不提交公开仓库。
+
+## 阶段 5 时序可靠性
+
+方法、独立开关和 CPU 验收命令见 [阶段 5 方法](STAGE5_METHOD.md)，实际结果与限制见 [阶段 5 报告](STAGE5_REPORT.md)。`scripts/check_stage5.sh` 运行全套测试、相同阶段 4 初始状态的两模型排错训练、2×2 训练/推理开关和 SuperPoint 参照，以及保存文件的独立核验。
+
+固定 worktree 为 `/developer06/SCAF-worktrees/stage5-4589b9a`，输出为 `/developer06/SCAF/runs/stage5-4589b9a-acceptance/`。需要显式设置 `SCAF_GEOMETRY_CHECKPOINT` 指向已核验的阶段 4 `geometry-final.pt`。`experiment/control-final.pt`、`temporal-final.pt` 及其日志仅用于小样本排错；零监督步骤跳过优化器，实际更新次数在日志中保留。本入口不支持正式训练恢复，不读取测试特征，也不使用 GPU。

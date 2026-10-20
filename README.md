@@ -6,7 +6,7 @@
 
 ## 当前状态
 
-阶段 1—4 已完成工程验收：数据管线、三类官方冻结基线、统一匹配评分、固定 RGB-D PnP 里程计及几何可靠性感知增强模块已在服务器检查。阶段 4 全套 80 项测试通过，完成 48 步小样本训练和 30 项验证前缀结果；目前尚无稳定精度收益，详见[阶段 4 报告](docs/STAGE4_REPORT.md)和[方法说明](docs/STAGE4_METHOD.md)。既有基线见[阶段 3 报告](docs/STAGE3_REPORT.md)、[基线运行说明](docs/STAGE3_BASELINES.md)及[实验协议 v2](docs/EXPERIMENT_PROTOCOL.md)。真实低照度测试集继续保留；时序模块、正式多种子训练和完整实验待做，下一步为阶段 5。
+阶段 1—5 已完成工程验收：几何增强、时序可靠性、训练加权与推理筛选已在服务器检查。阶段 5 全套 **113 项测试通过**，完成两模型小样本训练、训练开关×推理开关的 30 项验证前缀结果及文件核验。筛选提高了可评判匹配精确率，但减少正确匹配；定位和时序训练均尚无稳定收益，详见[阶段 5 报告](docs/STAGE5_REPORT.md)和[方法说明](docs/STAGE5_METHOD.md)。此前见[阶段 4](docs/STAGE4_REPORT.md)、[阶段 3](docs/STAGE3_REPORT.md)及[实验协议 v2](docs/EXPERIMENT_PROTOCOL.md)。真实低照度测试集继续保留；下一步为阶段 6 的正式训练流程与验证选型。
 
 ## 研究内容
 
@@ -38,7 +38,7 @@
 - [x] 阶段 2：数据准备、场景划分与监督生成。
 - [x] 阶段 3：强基线与统一视觉里程计评测。
 - [x] 阶段 4：几何可靠性感知描述子增强（工程与小样本验收，效果待验证）。
-- [ ] 阶段 5：时序可靠性约束与匹配筛选。
+- [x] 阶段 5：时序可靠性约束与匹配筛选（工程与小样本验收，效果待验证）。
 - [ ] 阶段 6：正式训练与验证集选型。
 - [ ] 阶段 7：冻结方案后的完整测试与统计分析。
 - [ ] 阶段 8：论文、图表与投稿材料。
@@ -70,8 +70,12 @@ SCAF_AUDIT_MANIFEST=/developer06/SCAF/runs/stage2-20261019T102938-1156259/audit/
 # 阶段 4：全部回归测试、小样本训练、验证前缀与输出核验，仅 CPU
 SCAF_AUDIT_MANIFEST=/developer06/SCAF/runs/stage2-20261019T102938-1156259/audit/manifest.json \
   bash scripts/check_stage4.sh
+# 阶段 5：训练/推理独立开关、光流与输出核验，仅 CPU
+SCAF_AUDIT_MANIFEST=/developer06/SCAF/runs/stage2-20261019T102938-1156259/audit/manifest.json \
+SCAF_GEOMETRY_CHECKPOINT=/developer06/SCAF/runs/stage4-3c9d117-acceptance/experiment/geometry-final.pt \
+  bash scripts/check_stage5.sh
 ```
 
 默认只检查 CPU。CUDA 微型诊断必须显式指定物理 GPU，默认拒绝占用中的卡；共享诊断不作为性能基准，也不会启动训练。
 
-代码运行和测试均在服务器 `/developer06/SCAF` 或固定提交 worktree；本地仅编辑与同步。阶段 3/4 验收使用单线程 CPU，不初始化 CUDA；阶段 4 仅执行固定 48 步排错训练。完整数据及输出保留服务器，本地仅取回必要的小型检查副本。
+代码运行和测试均在服务器 `/developer06/SCAF` 或固定提交 worktree；本地仅编辑与同步。阶段 3—5 验收使用单线程 CPU，不初始化 CUDA；阶段 4/5 只执行固定小样本排错训练，不代替阶段 6 的正式训练。完整数据及输出保留服务器，本地仅取回必要的小型检查副本。
